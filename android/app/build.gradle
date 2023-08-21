@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+
+apply plugin:'flutter.io/firebase_firestore'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {

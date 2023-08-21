@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:untitled2/home.dart';
-import 'package:untitled2/register.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -12,36 +9,6 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
-  final _nameController = TextEditingController();
-  final userEmailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  Future<void> _handleLogin() async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: userEmailController.text,
-        password: _passwordController.text,
-      );
-
-      if (userCredential.user != null) {
-        DatabaseReference userRef = _database.reference().child('user');
-        String uid = userCredential.user!.uid;
-        userRef.child(userCredential.user!.uid).set({
-          'name': _nameController.text,
-          'email': userEmailController.text,
-          'uid': uid,
-        });
-
-        // Navigate to the next page or perform any desired action
-      }
-    } catch (error) {
-      // Handle error
-      print('Error: $error');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -113,14 +80,11 @@ class _MyLoginState extends State<MyLogin> {
                                 child: IconButton(
                                     color: Colors.white,
                                     onPressed: () {
-                                      _handleLogin();
                                       Navigator.push(
-                                        context,
-                                        new MaterialPageRoute(
-                                          builder: (context) =>
-                                              new BiogasifyApp(),
-                                        ),
-                                      );
+                                          context,
+                                          new MaterialPageRoute(
+                                              builder: (context) =>
+                                                  new BiogasifyApp()));
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,
@@ -136,12 +100,7 @@ class _MyLoginState extends State<MyLogin> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                      builder: (context) => new MyRegister(),
-                                    ),
-                                  );
+                                  Navigator.pushNamed(context, 'register');
                                 },
                                 child: Text(
                                   'Sign Up',

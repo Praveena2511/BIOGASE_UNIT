@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:untitled2/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserDetailsApp extends StatelessWidget {
   @override
@@ -21,6 +22,7 @@ class UserDetailsScreen extends StatefulWidget {
 }
 
 final databaseRef = FirebaseDatabase.instance.reference();
+final _firestore = FirebaseFirestore.instance;
 
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -37,8 +39,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final DetailsRef = databaseRef.child('info/');
-    String fname = _firstNameController.text;
-    String lname = _lastNameController.text;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('User Details Form'),
@@ -139,10 +140,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                       ),
                     );
                     try {
-                      await DetailsRef.push().set({
-                        'firstname': fname,
-                        'lastname': lname,
-                      });
+                       createUser(UserModel user){
+                         _firestore.collection('info').add()
+                       }
                       print('Process Sucess');
                     } catch (e) {
                       print('You got an Error! $e');
@@ -157,4 +157,15 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       ),
     );
   }
+}
+
+class UserModel{
+  final String? id;
+  String fname = _firstNameController.text;
+  String lname = _lastNameController.text;
+  const UserModel({
+    this.id,
+    required this.fname,
+    required this.lname,
+  });
 }
