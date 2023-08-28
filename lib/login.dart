@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:untitled2/home.dart';
+import 'package:untitled2/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'forgotpass.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -8,11 +12,48 @@ class MyLogin extends StatefulWidget {
   _MyLoginState createState() => _MyLoginState();
 }
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+var firebaseUser = FirebaseAuth.instance.currentUser!;
+
 class _MyLoginState extends State<MyLogin> {
+  storeNewUser(User, context) {}
+
+  TextEditingController EmailController = TextEditingController();
+  TextEditingController Password = TextEditingController();
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    String email = EmailController.text;
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => BiogasifyApp()));
+    } catch (e) {
+      print('Sign-in failed: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Sign-In Failed'),
+            content: const Text(
+                'Invalid email or password. Please check your credentials and try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                  // Handle sign-in error here
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
             image: AssetImage('assets/login.png'), fit: BoxFit.cover),
       ),
@@ -22,8 +63,8 @@ class _MyLoginState extends State<MyLogin> {
           children: [
             Container(),
             Container(
-              padding: EdgeInsets.only(left: 35, top: 130),
-              child: Text(
+              padding: const EdgeInsets.only(left: 35, top: 130),
+              child: const Text(
                 'Welcome\nBack',
                 style: TextStyle(color: Colors.white, fontSize: 33),
               ),
@@ -36,11 +77,12 @@ class _MyLoginState extends State<MyLogin> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(left: 35, right: 35),
+                      margin: const EdgeInsets.only(left: 35, right: 35),
                       child: Column(
                         children: [
                           TextField(
-                            style: TextStyle(color: Colors.black),
+                            style: const TextStyle(color: Colors.black),
+                            controller: EmailController,
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
                                 filled: true,
@@ -49,12 +91,13 @@ class _MyLoginState extends State<MyLogin> {
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           TextField(
-                            style: TextStyle(),
+                            style: const TextStyle(),
                             obscureText: true,
+                            controller: Password,
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
                                 filled: true,
@@ -63,36 +106,33 @@ class _MyLoginState extends State<MyLogin> {
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 'Sign in',
                                 style: TextStyle(
                                     fontSize: 27, fontWeight: FontWeight.w700),
                               ),
                               CircleAvatar(
                                 radius: 30,
-                                backgroundColor: Color(0xff4c505b),
+                                backgroundColor: const Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  new BiogasifyApp()));
+                                      signInWithEmailAndPassword(
+                                          EmailController.text, Password.text);
                                     },
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.arrow_forward,
                                     )),
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           Row(
@@ -100,9 +140,14 @@ class _MyLoginState extends State<MyLogin> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  Navigator.pushNamed(context, 'register');
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MyRegister()));
                                 },
-                                child: Text(
+                                style: const ButtonStyle(),
+                                child: const Text(
                                   'Sign Up',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
@@ -110,11 +155,16 @@ class _MyLoginState extends State<MyLogin> {
                                       color: Color(0xff4c505b),
                                       fontSize: 18),
                                 ),
-                                style: ButtonStyle(),
                               ),
                               TextButton(
-                                  onPressed: () {},
-                                  child: Text(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const PasswordResetScreen()));
+                                  },
+                                  child: const Text(
                                     'Forgot Password',
                                     style: TextStyle(
                                       decoration: TextDecoration.underline,

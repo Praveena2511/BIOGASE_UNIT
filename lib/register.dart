@@ -1,22 +1,26 @@
+import 'package:untitled2/details.dart';
+
 import 'package:flutter/material.dart';
-import 'package:untitled2/mysql.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
+
   @override
   _MyRegisterState createState() => _MyRegisterState();
 }
 
+late String uid = '';
+
 class _MyRegisterState extends State<MyRegister> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController userEmailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController userEmailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   Future<void> _handleDetail() async {
     try {
       UserCredential userCredential =
@@ -27,12 +31,14 @@ class _MyRegisterState extends State<MyRegister> {
 
       if (userCredential.user != null) {
         DatabaseReference userRef = _database.reference().child('user');
-        String uid = userCredential.user!.uid;
+        uid = userCredential.user!.uid;
+
         await userRef.child(userCredential.user!.uid).set({
           'name': _nameController.text,
           'email': userEmailController.text,
           'uid': uid,
         });
+
         Fluttertoast.showToast(msg: 'Success');
         Navigator.of(context).pop();
 
@@ -55,7 +61,7 @@ class _MyRegisterState extends State<MyRegister> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
             image: AssetImage('assets/register.png'), fit: BoxFit.cover),
       ),
@@ -68,8 +74,8 @@ class _MyRegisterState extends State<MyRegister> {
         body: Stack(
           children: [
             Container(
-              padding: EdgeInsets.only(left: 35, top: 30),
-              child: Text(
+              padding: const EdgeInsets.only(left: 35, top: 30),
+              child: const Text(
                 'Create\nAccount',
                 style: TextStyle(color: Colors.white, fontSize: 33),
               ),
@@ -82,89 +88,90 @@ class _MyRegisterState extends State<MyRegister> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(left: 35, right: 35),
+                      margin: const EdgeInsets.only(left: 35, right: 35),
                       child: Column(
                         children: [
+                          Text('Email :$userEmailController'),
                           TextField(
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             controller: _nameController,
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.white,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.black,
                                   ),
                                 ),
                                 hintText: "Name",
-                                hintStyle: TextStyle(color: Colors.white),
+                                hintStyle: const TextStyle(color: Colors.white),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           TextField(
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             controller: userEmailController,
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.white,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.black,
                                   ),
                                 ),
                                 hintText: "Email",
-                                hintStyle: TextStyle(color: Colors.white),
+                                hintStyle: const TextStyle(color: Colors.white),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           TextField(
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.white,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.black,
                                   ),
                                 ),
                                 hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.white),
+                                hintStyle: const TextStyle(color: Colors.white),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 'Sign Up',
                                 style: TextStyle(
                                     color: Colors.white,
@@ -173,21 +180,30 @@ class _MyRegisterState extends State<MyRegister> {
                               ),
                               CircleAvatar(
                                 radius: 30,
-                                backgroundColor: Color(0xff4c505b),
+                                backgroundColor: const Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
-                                    onPressed: () {
+                                    onPressed: () async {
                                       _handleDetail();
-                                      Navigator.pushNamed(context, 'details');
+
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                UserDetailsApp(
+                                                    userEmailController.text
+                                                        .toString(),
+                                                    uid),
+                                          ));
                                     },
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.arrow_forward,
                                     )),
                               )
                             ],
                           ),
-                          SizedBox(
-                            height: 40,
+                          const SizedBox(
+                            height: 35,
                           ),
                         ],
                       ),

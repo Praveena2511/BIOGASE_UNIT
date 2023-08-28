@@ -1,9 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:untitled2/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled2/product.dart';
+
+import 'Productdescription.dart';
 
 class UserDetailsApp extends StatelessWidget {
+  final String email, userid;
+  UserDetailsApp(this.email, this.userid);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,38 +18,46 @@ class UserDetailsApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: UserDetailsScreen(),
+      home: UserDetailsScreen(emailfromhome: email, useridentity: userid),
     );
   }
 }
 
 class UserDetailsScreen extends StatefulWidget {
+  final String emailfromhome, useridentity;
+
+  UserDetailsScreen(
+      {required this.emailfromhome,
+      required this.useridentity}); // Receive the emailFromHome parameter
+
   @override
-  _UserDetailsScreenState createState() => _UserDetailsScreenState();
+  _UserDetailsScreenState createState() => _UserDetailsScreenState(
+      emailid: emailfromhome,
+      uid: useridentity); // Pass the emailFromHome to the state
 }
 
 final databaseRef = FirebaseDatabase.instance.reference();
-final _firestore = FirebaseFirestore.instance;
 
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
+  String emailid, uid;
+  _UserDetailsScreenState({required this.emailid, required this.uid});
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _districtController = TextEditingController();
-  TextEditingController _stateController = TextEditingController();
-  TextEditingController _countryController = TextEditingController();
-  TextEditingController _landmarkController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _districtController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _landmarkController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final DetailsRef = databaseRef.child('info/');
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Details Form'),
+        title: const Text('User Details Form'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -53,7 +68,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               children: [
                 TextFormField(
                   controller: _firstNameController,
-                  decoration: InputDecoration(labelText: 'First Name'),
+                  decoration: const InputDecoration(labelText: 'First Name'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your first name';
@@ -62,18 +77,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   },
                 ),
                 TextFormField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(labelText: 'Last Name'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
                   controller: _phoneController,
-                  decoration: InputDecoration(labelText: 'Phone Number'),
+                  decoration: const InputDecoration(labelText: 'Phone Number'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your phone number';
@@ -83,7 +88,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 TextFormField(
                   controller: _addressController,
-                  decoration: InputDecoration(labelText: 'Address'),
+                  decoration: const InputDecoration(labelText: 'Address'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your address';
@@ -93,7 +98,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 TextFormField(
                   controller: _districtController,
-                  decoration: InputDecoration(labelText: 'District'),
+                  decoration: const InputDecoration(labelText: 'District'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your district';
@@ -103,7 +108,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 TextFormField(
                   controller: _stateController,
-                  decoration: InputDecoration(labelText: 'State'),
+                  decoration: const InputDecoration(labelText: 'State'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your state';
@@ -113,7 +118,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 TextFormField(
                   controller: _countryController,
-                  decoration: InputDecoration(labelText: 'Country'),
+                  decoration: const InputDecoration(labelText: 'Country'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your country';
@@ -123,32 +128,65 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 TextFormField(
                   controller: _landmarkController,
-                  decoration: InputDecoration(labelText: 'Landmark'),
+                  decoration: const InputDecoration(labelText: 'Landmark'),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyLogin(),
+                      ),
+                    );
                     // Form is valid, process the data
                     // You can use the controllers' values to get user details
                     // For example: _firstNameController.text, _lastNameController.text, etc.
                     // Add your logic here to save or display the user details
+                    String fname = _firstNameController.text;
+                    String Phone = _phoneController.text;
+                    String address = _addressController.text;
+                    String district = _districtController.text;
+                    String state = _stateController.text;
+                    String country = _countryController.text;
+                    String landmark = _landmarkController.text;
+
+                    final String email = '$emailid';
+                    final String uid1 = '$uid';
+                    print(uid1);
+                    print(email);
+                    CollectionReference collRef =
+                        FirebaseFirestore.instance.collection('info');
+                    DocumentSnapshot docSnapshot =
+                        await collRef.doc(email).get();
+
+                    try {
+                      if (!docSnapshot.exists) {
+                        await collRef.doc(email).set({
+                          'firstname': fname,
+                          'Email': email,
+                          'UID': uid1,
+                          'Phone No': Phone,
+                          'Address': address,
+                          'District': district,
+                          'State': state,
+                          'Country': country,
+                          'Landmark': landmark
+                        });
+                        print('Document added successfully');
+                      }
+                    } catch (e) {
+                      print('Error adding document: $e');
+                    }
 
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(
-                        builder: (context) => new MyLogin(),
+                      MaterialPageRoute(
+                        builder: (context) => const MyLogin(),
                       ),
                     );
-                    try {
-                       createUser(UserModel user){
-                         _firestore.collection('info').add()
-                       }
-                      print('Process Sucess');
-                    } catch (e) {
-                      print('You got an Error! $e');
-                    }
                   },
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ],
             ),
@@ -157,15 +195,4 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       ),
     );
   }
-}
-
-class UserModel{
-  final String? id;
-  String fname = _firstNameController.text;
-  String lname = _lastNameController.text;
-  const UserModel({
-    this.id,
-    required this.fname,
-    required this.lname,
-  });
 }
